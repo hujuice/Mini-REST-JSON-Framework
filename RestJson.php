@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * @author Sergio Vaccaro <hujuice@inservibile.org>
  * @version 1.0
@@ -26,10 +26,10 @@ class RestJson
      * Service configuration
      * @var array
      */
-    protected $this->_config = array(
+    protected $_config = array(
                                     'debug'         => false,
                                     'max-age'       => 0,
-                                    'modelsPath'    => '../models',
+                                    'modelPath'    => '../model',
                                     'model'         => null,
                                     );
 
@@ -62,7 +62,7 @@ class RestJson
      * @param string $errline
      * @return boolean
      */
-    protected function _errorHandler($errno, $errstr, $errfile, $errline)
+    public function errorHandler($errno, $errstr, $errfile, $errline)
     {
         if ($this->_config['debug'])
             return false; // Back to ordinary errors
@@ -76,7 +76,7 @@ class RestJson
      * @param Exception $exception
      * @return void
      */
-    protected function _exceptionHandler($exception)
+    public function exceptionHandler($exception)
     {
         if ($this->_config['debug'])
             $this->_serverError('Model Exception:' . "\n" . $exception->getTraceAsString()); // Will exit
@@ -92,15 +92,15 @@ class RestJson
      */
     public function __construct($config)
     {
-        set_error_handler(array($this, '_errorHandler'));
-        set_exception_handler(array($this, '_exceptionHandler'));
+        set_error_handler(array($this, 'errorHandler'));
+        set_exception_handler(array($this, 'exceptionHandler'));
 
         if ($settings = parse_ini_file($config, true))
         {
             // Object configuration
             if (!empty($settings['service']) && is_array($settings['service']))
             {
-                $this->_config = array_merge($this->_config, $settings);
+                $this->_config = array_merge($this->_config, $settings['service']);
 
                 if (empty($this->_config['model']))
                     $this->_serverError('Unable to find the model name. Please, set "model = " in the [service] section of your config file.');
@@ -113,7 +113,7 @@ class RestJson
                         $config = array();
 
                     // Model!
-                    require(trim($this->_config['modelsPath'], ' /') . '/' . $this->_config['model'] . '.php');
+                    require(trim($this->_config['modelPath'], ' /') . '/' . $this->_config['model'] . '.php');
                     $this->_model = new $this->_config['model']($config);
 
                     // Some validation...
@@ -139,17 +139,20 @@ class RestJson
         // No CSRF protection
         // Be careful if authenticated by cookie
 
-        $response = $this->_model($_GET);
+        // Bug!!! https://bugs.php.net/bug.php?id=50029
+        // $response = $this->_model($_GET);
+
+        $response = $response = $this->_model->__invoke($_GET);
         header('HTTP/1.1 200 OK');
         if($this->_config['debug'])
         {
             header('Cache-Control: no-cache');
             header('Content-Type: text/plain');
-            print_r($response);
+            var_dump($response);
         }
         else
         {
-            if (empty($this->_config['max-age']))
+            if (empty($this->_config['max-age']) || ($this->_config['max-age'] <= 0))
                 header('Cache-Control: no-cache');
             else
             {
