@@ -35,5 +35,5 @@ See the example to learn more.
 WORKING EXAMPLE
 ===============
 Try to run:
-http://rest-json/ws.php?action=planet&planet=Uranus
-http://rest-json/ws.php?action=humans
+http://rest-json.inservibile.org/ws.php?action=planet&planet=Uranus
+http://rest-json.inservibile.org/ws.php?action=humans
