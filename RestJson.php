@@ -161,7 +161,7 @@ class RestJson
                 header('Cache-Control: public, must-revalidate, max-age=' . $this->_config['max-age']);
             }
             header('Content-Type: application/json');
-            echo json_encode($response); // Encoding... no XSS risk
+            echo json_encode((array) $response); // Encoding... no XSS risk
         }
     }
 }

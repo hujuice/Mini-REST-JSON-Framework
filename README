@@ -31,3 +31,9 @@ model, the model class/file name, mandatory
 everything to be passed to the model
 
 See the example to learn more.
+
+WORKING EXAMPLE
+===============
+Try to run:
+http://rest-json/ws.php?action=planet&planet=Uranus
+http://rest-json/ws.php?action=humans

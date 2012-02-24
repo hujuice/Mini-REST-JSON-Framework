@@ -32,7 +32,7 @@ class Members
             if ($member[1] == $planet)
                 $count++;
         }
-        return $count;
+        return array($planet => $count);
     }
 
     /**
@@ -48,6 +48,6 @@ class Members
             if ('Human' == $member[2])
                 $count++;
         }
-        return array('humans' => $count);
+        return $count;
     }
 }
