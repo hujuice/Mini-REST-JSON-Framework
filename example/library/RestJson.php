@@ -8,7 +8,7 @@ class RestJson
     protected $_config = array(
                                     'debug'         => false,
                                     'max-age'       => 0,
-                                    'modelsPath'    => '../models',
+                                    'modelPath'    => '../model',
                                     'model'         => null,
                                     );
 
@@ -92,7 +92,7 @@ class RestJson
                         $config = array();
 
                     // Model!
-                    require(trim($this->_config['modelsPath'], ' /') . '/' . $this->_config['model'] . '.php');
+                    require(trim($this->_config['modelPath'], ' /') . '/' . $this->_config['model'] . '.php');
                     $this->_model = new $this->_config['model']($config);
 
                     // Some validation...
@@ -131,7 +131,7 @@ class RestJson
         }
         else
         {
-            if (empty($this->_config['max-age']))
+            if (empty($this->_config['max-age']) || ($this->_config['max-age'] <= 0))
                 header('Cache-Control: no-cache');
             else
             {

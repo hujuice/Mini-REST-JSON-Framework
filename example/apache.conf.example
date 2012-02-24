@@ -1,0 +1,21 @@
+<VirtualHost *:80>
+	ServerName	rest-json.yourdomain
+
+	# Codifica dei caratteri
+	AddDefaultCharset utf-8
+
+	# Log
+	LogFormat "%v %h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" vhost_combined
+	CustomLog /var/log/apache2/rest-json-access_log vhost_combined
+
+	ErrorLog /var/log/apache2/rest-json-error_log
+	LogLevel debug
+
+	DocumentRoot "/var/www/rest-json/example/htdocs"
+	<Directory "/var/www/rest-json/example/htdocs">
+		Options -Indexes MultiViews FollowSymLinks
+		AllowOverride None
+		Order allow,deny
+		Allow from all
+	</Directory>
+</VirtualHost>
