@@ -16,16 +16,16 @@ Have the RestJson.php file somewhere.
 Prepare a ws.php (or the name you like) in your htdocs dir.
 Include the RestJson.php file.
 Create a RestJson object, giving it a configuration path.
-Run the ->run() method for the RestJson object.
+Run the ->run() method of the RestJson object.
 See the example to learn more.
 
 CONFIGURATION
 =============
 [service]
-debug, if true have a more detailed error reporting, optional (default false)
-max-age, if > 0 will give a "Cache-Control: cache, must-revalidate, max-age=seconds" header, else a "Cache-Control: no-cache" header, optional (default 0)
-modelPath, the model path, optional, (default "../model")
 model, the model class/file name, mandatory
+modelPath, the model path, optional, (default "../model")
+max-age, if > 0 will give a "Cache-Control: cache, must-revalidate, max-age=seconds" header, else a "Cache-Control: no-cache" header, optional (default 0)
+debug, if true have a more detailed error reporting, optional (default false)
 
 [config]
 everything to be passed to the model
