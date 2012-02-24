@@ -40,7 +40,7 @@ class Members
      *
      * @return integer
      */
-    public functions getHumans()
+    public function getHumans()
     {
         $count = 0;
         foreach ($this->_members as $member)
@@ -48,6 +48,6 @@ class Members
             if ('Human' == $member[2])
                 $count++;
         }
-        return $count;
+        return array('humans' => $count);
     }
 }

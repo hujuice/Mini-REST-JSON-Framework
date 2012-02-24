@@ -1,7 +1,7 @@
 <?php
 // Ensure library/ is on include_path
 set_include_path(implode(PATH_SEPARATOR, array(
-    realpath(APPLICATION_PATH . '/../library'),
+    realpath(__DIR__ . '/../library'),
     get_include_path(),
 )));
 

@@ -1,4 +1,5 @@
 <?php
+include_once('Members.php');
 class myWs extends Members
 {
     /**
@@ -22,14 +23,14 @@ class myWs extends Members
     {
         if (isset($params['action']))
         {
-            switch($param['action'])
+            switch($params['action'])
             {
                 case 'planet':
                     if (isset($params['planet']))
                         return $this->getFromPlanet($params['planet']);
                 case 'humans':
                     return $this->getHumans();
-                default
+                default:
                     return;
             }
         }
