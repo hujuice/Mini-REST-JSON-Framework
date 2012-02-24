@@ -5,8 +5,8 @@ Have a easy-to-use REST-JSON Framework for PHP
 CONCEPTS
 ========
 If you have a data repository, simply write a class to read its data.
-Then, extend the class to have an __invoke method reading some $params
-$params will come grom $_GET
+Then, extend the class to have an __invoke method reading some $params.
+    $params will come grom $_GET.
 Also, extend the class to have a __construct method, reading some config.
 See the example to learn more.
 
