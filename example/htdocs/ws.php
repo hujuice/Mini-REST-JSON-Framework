@@ -7,4 +7,6 @@ set_include_path(implode(PATH_SEPARATOR, array(
 
 require_once('RestJson.php');
 $restJson = new RestJson('../services/myWs.ini');
+
+// GO GO GO!!!
 $restJson->run();

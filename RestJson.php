@@ -102,6 +102,16 @@ class RestJson
             {
                 $this->_config = array_merge($this->_config, $settings['service']);
 
+                if (empty($this->_config['max-age']) || ($this->_config['max-age'] <= 0))
+                    $this->_config['cache'] = array('Cache-Control: no-cache');
+                else
+                {
+                    $this->_config['cache'] = array(
+                                                    'Last-Modified: ' . date('c'),
+                                                    'Cache-Control: public, must-revalidate, max-age=' . $this->_config['max-age'],
+                                                    );
+                }
+
                 if (empty($this->_config['model']))
                     $this->_serverError('Unable to find the model name. Please, set "model = " in the [service] section of your config file.');
                 else
@@ -152,14 +162,8 @@ class RestJson
         }
         else
         {
-            if (empty($this->_config['max-age']) || ($this->_config['max-age'] <= 0))
-                header('Cache-Control: no-cache');
-            else
-            {
-                // Give a complete cache headers
-                header('Last-Modified: ' . date('c'));
-                header('Cache-Control: public, must-revalidate, max-age=' . $this->_config['max-age']);
-            }
+            foreach($this->_config['cache'] as $cacheHeader)
+                header($cacheHeader);
             header('Content-Type: application/json');
             echo json_encode((array) $response); // Encoding... no XSS risk
         }
