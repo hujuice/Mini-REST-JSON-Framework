@@ -102,7 +102,8 @@ class RestJson
             {
                 $this->_config = array_merge($this->_config, $settings['service']);
 
-                if (empty($this->_config['max-age']) || ($this->_config['max-age'] <= 0))
+                // Cache headers
+                if ($this->_config['debug'] || empty($this->_config['max-age']) || ($this->_config['max-age'] <= 0))
                     $this->_config['cache'] = array('Cache-Control: no-cache');
                 else
                 {
@@ -153,17 +154,20 @@ class RestJson
         // $response = $this->_model($_GET);
 
         $response = $response = $this->_model->__invoke($_GET);
+
+        // Headers
         header('HTTP/1.1 200 OK');
+        foreach($this->_config['cache'] as $cacheHeader)
+            header($cacheHeader);
+
+        // Return response
         if($this->_config['debug'])
         {
-            header('Cache-Control: no-cache');
             header('Content-Type: text/plain');
             var_dump($response);
         }
         else
         {
-            foreach($this->_config['cache'] as $cacheHeader)
-                header($cacheHeader);
             header('Content-Type: application/json');
             echo json_encode((array) $response); // Encoding... no XSS risk
         }
