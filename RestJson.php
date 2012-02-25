@@ -115,9 +115,6 @@ class RestJson
         // Prepare the service configuration
         $this->_config = array_merge($this->_config, array_filter($settings['service']));
 
-        // Set the timezone
-        date_default_timezone_set($this->_config['timezone']);
-
         // Prepare cache headers
         if ($this->_config['debug'] || empty($this->_config['max-age']) || ((integer) $this->_config['max-age'] <= 0))
             $this->_config['cache'] = array('Cache-Control: no-cache');
