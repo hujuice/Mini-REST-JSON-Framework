@@ -161,7 +161,7 @@ class RestJson
 
         // Bug!!! https://bugs.php.net/bug.php?id=50029
         // $response = $this->_model($_GET);
-        $response = $response = $this->_model->__invoke(addslashes($_GET));
+        $response = $response = $this->_model->__invoke($_GET);
 
         // Headers
         header('HTTP/1.1 200 OK');
