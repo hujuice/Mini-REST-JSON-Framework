@@ -27,11 +27,12 @@ class RestJson
      * @var array
      */
     protected $_config = array(
-                                    'debug'         => false,
-                                    'max-age'       => 0,
-                                    'modelPath'    => '../model',
-                                    'model'         => null,
-                                    );
+                            'model'     => null,
+                            'modelPath' => '../model',
+                            'timezone'  => 'UTC',
+                            'max-age'   => 0,
+                            'debug'     => false,
+                            );
 
     /**
      * The model
@@ -95,49 +96,50 @@ class RestJson
         set_error_handler(array($this, 'errorHandler'));
         set_exception_handler(array($this, 'exceptionHandler'));
 
-        if ($settings = parse_ini_file($config, true))
-        {
-            // Object configuration
-            if (!empty($settings['service']) && is_array($settings['service']))
-            {
-                $this->_config = array_merge($this->_config, $settings['service']);
+        // Check check check!
 
-                // Cache headers
-                if ($this->_config['debug'] || empty($this->_config['max-age']) || ($this->_config['max-age'] <= 0))
-                    $this->_config['cache'] = array('Cache-Control: no-cache');
-                else
-                {
-                    $this->_config['cache'] = array(
-                                                    'Last-Modified: ' . date('c'),
-                                                    'Cache-Control: public, must-revalidate, max-age=' . $this->_config['max-age'],
-                                                    );
-                }
-
-                if (empty($this->_config['model']))
-                    $this->_serverError('Unable to find the model name. Please, set "model = " in the [service] section of your config file.');
-                else
-                {
-                    // Grab the model config
-                    if (!empty($settings['config']) && is_array($settings['config']))
-                        $config = $settings['config'];
-                    else
-                        $config = array();
-
-                    // Model!
-                    require(trim($this->_config['modelPath'], ' /') . '/' . $this->_config['model'] . '.php');
-                    $this->_model = new $this->_config['model']($config);
-
-                    // Some validation...
-                    if (!method_exists($this->_model, '__invoke'))
-                        $this->_serverError('Unable to find an "__invoke" method.');
-                }
-
-            }
-            else
-                $this->_serverError('Unable to find a [service] section the ini configuration file.');
-        }
-        else
+        // Configuration file
+        if (!$settings = parse_ini_file($config, true))
             $this->_serverError('Unable to read ini configuration from ' . $config . '.');
+
+        // Service configuration
+        if (empty($settings['service']) || !is_array($settings['service']))
+            $this->_serverError('Unable to find a [service] section the ini configuration file.');
+
+        // Model name
+        if (empty($settings['service']['model']))
+            $this->_serverError('Unable to find the model name. Please, set "model = " in the [service] section of your config file.');
+
+        // End check
+
+        // Prepare the service configuration
+        $this->_config = array_merge($this->_config, array_filter($settings['service']));
+
+        // Set the timezone
+        date_default_timezone_set($this->_config['timezone']);
+
+        // Prepare cache headers
+        if ($this->_config['debug'] || empty($this->_config['max-age']) || ((integer) $this->_config['max-age'] <= 0))
+            $this->_config['cache'] = array('Cache-Control: no-cache');
+        else
+            $this->_config['cache'] = array(
+                                            'Last-Modified: ' . date(DATE_RFC1123),
+                                            'Cache-Control: max-age=' . (integer) $this->_config['max-age'] . ', must-revalidate',
+                                            );
+
+        // Prepare the model configuration
+        if (!empty($settings['model']) && is_array($settings['model']))
+            $modelConfig = $settings['model'];
+        else
+            $modelConfig = array();
+
+        // Build the model!
+        require($this->_config['modelPath'] . '/' . $this->_config['model'] . '.php');
+        $this->_model = new $this->_config['model']($modelConfig);
+
+        // Validate the model...
+        if (!method_exists($this->_model, '__invoke'))
+            $this->_serverError('Unable to find an "__invoke" method.');
     }
 
     /**
@@ -147,12 +149,21 @@ class RestJson
      */
     public function run()
     {
+        // Try to revalidate the cache
+        if (!empty($_SERVER['HTTP_IF_MODIFIED_SINCE']))
+        {
+            if ((strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) + $this->_config['max-age']) > time()) // fresh!
+            {
+                header("HTTP/1.1 304 Not Modified");
+                exit;
+            }
+        }
+
         // No CSRF protection
         // Be careful if authenticated by cookie
 
         // Bug!!! https://bugs.php.net/bug.php?id=50029
         // $response = $this->_model($_GET);
-
         $response = $response = $this->_model->__invoke($_GET);
 
         // Headers

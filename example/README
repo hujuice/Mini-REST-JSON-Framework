@@ -1,0 +1,13 @@
+Have some members data in a file model/members.csv.
+
+Have a class to read data in model/Members.php.
+The class takes some configuration at the __constructor.
+
+Extend the class to have an __invoke method, if needed.
+The __invoke method will take an array of params and switch to the appropriate functions.
+
+Prepare one configuration ini file for both service and model, using sections.
+
+Under your htdocs path, have a 'members.php' service.
+In the members.php file build a new RestJson object giving it the configuration file.
+Run.

@@ -15,11 +15,15 @@ class Members
      */
     public function __construct($file)
     {
-        $this->_members = include($file);
+        //$this->_members = include($file);
+        $handle = fopen($file, 'r');
+        while ($record = fgetcsv($handle, 256))
+            $this->_members[] = $record;
+        fclose($handle);
     }
 
     /**
-     * Select by planet
+     * Count by planet
      *
      * @param string $planet
      * @return integer

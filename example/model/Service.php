@@ -1,6 +1,6 @@
 <?php
 include_once('Members.php');
-class myWs extends Members
+class Service extends Members
 {
     /**
      * Read data from a file
