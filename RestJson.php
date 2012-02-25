@@ -29,7 +29,6 @@ class RestJson
     protected $_config = array(
                             'model'     => null,
                             'modelPath' => '../model',
-                            'timezone'  => 'UTC',
                             'max-age'   => 0,
                             'debug'     => false,
                             );
@@ -95,6 +94,7 @@ class RestJson
     {
         set_error_handler(array($this, 'errorHandler'));
         set_exception_handler(array($this, 'exceptionHandler'));
+        date_default_timezone_set('GMT'); // To be validated in http://redbot.org/
 
         // Check check check!
 
@@ -123,7 +123,7 @@ class RestJson
             $this->_config['cache'] = array('Cache-Control: no-cache');
         else
             $this->_config['cache'] = array(
-                                            'Last-Modified: ' . date(DATE_RFC1123),
+                                            'Last-Modified: ' . date(DATE_RFC850),
                                             'Cache-Control: max-age=' . (integer) $this->_config['max-age'] . ', must-revalidate',
                                             );
 
